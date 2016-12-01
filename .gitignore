@@ -10,6 +10,4 @@
 hs_err_pid*
 /.idea/
 goit-4-offline.iml
-pom.xml
-src/main/resources/
 target/
