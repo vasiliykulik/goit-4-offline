@@ -1,14 +1,13 @@
 package ua.goit.offline4.dao;
 
-import ua.goit.offline4.dao.jdbc.ComponentDaoJdbc;
-import ua.goit.offline4.dao.jdbc.ComponentDaoJdbcSC;
-import ua.goit.offline4.entity.Component;
-
 import java.math.BigDecimal;
 import java.sql.SQLException;
 
-import com.mysql.jdbc.jdbc2.optional.MysqlConnectionPoolDataSource;
-import com.mysql.jdbc.jdbc2.optional.MysqlDataSource;
+import org.apache.commons.dbcp.BasicDataSource;
+
+import ua.goit.offline4.dao.jdbc.ComponentDaoJdbc;
+import ua.goit.offline4.dao.jdbc.ComponentDaoJdbcSC;
+import ua.goit.offline4.entity.Component;
 
 /**
  * ComponentDaoTest.
@@ -20,14 +19,15 @@ public class ComponentDaoTest {
 
     static {
         try {
-            Class.forName("com.mysql.jdbc.Driver");
+            Class.forName("org.postgresql.Driver");
         } catch (ClassNotFoundException e) {
             throw new RuntimeException(e.getCause());
         }
     }
-    private static final String URL = "jdbc:mysql://localhost/pizzeria";
+    private static final String URL = "jdbc:postgresql://localhost/pizzeria";
 
-    public static void main(String[] args) throws SQLException {
+    public static void main(String[] args)
+        throws SQLException {
         String username = System.getProperty("username");
         String password = System.getProperty("password");
 
@@ -43,12 +43,14 @@ public class ComponentDaoTest {
         System.out.println(dao.delete(component.getId()));
         System.out.println(dao.get(component.getId()));
 
-        MysqlConnectionPoolDataSource dataSource = new MysqlConnectionPoolDataSource();
-        dataSource.setURL(URL);
-        dataSource.setPassword(password);
-        dataSource.setUser(username);
-
-        dao = new ComponentDaoJdbc(dataSource);
+        BasicDataSource dataSource1 = new BasicDataSource();
+        dataSource1.setDriverClassName("org.postgresql.Driver");
+        dataSource1.setUrl(URL);
+        dataSource1.setUsername(username);
+        dataSource1.setPassword(password);
+        dataSource1.setMaxActive(10);
+        dataSource1.setMaxIdle(2);
+        dao = new ComponentDaoJdbc(dataSource1);
         System.out.println(dao.getAll());
         System.out.println(dao.get(1));
     }

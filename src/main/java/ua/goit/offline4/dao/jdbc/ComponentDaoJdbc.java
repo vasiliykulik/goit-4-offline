@@ -23,13 +23,14 @@ import ua.goit.offline4.entity.Component;
 public class ComponentDaoJdbc
     implements ComponentDao {
 
-    private static final String GET_BY_ID = "select id, name, prize from components where id = ?";
-    private static final String GET_ALL = "select id, name, prize from components";
-    private static final String GET_GT_PRIZE = "select id, name, prize from components where prize > ?";
-    private static final String INSERT_NEW = "insert into components(name, prize) values (?, ?)";
-    private static final String GET_LAST_INSERTED = "select LAST_INSERT_ID()";
-    private static final String UPDATE_ROW = "update components set name = ?, prize = ? where id = ?";
-    private static final String DELETE_ROW = "delete from components where id = ?";
+    private static final String GET_BY_ID = "select id, name, prize from pizzeria.components where id = ?";
+    private static final String GET_ALL = "select id, name, prize from pizzeria.components";
+    private static final String GET_GT_PRIZE = "select id, name, prize from pizzeria.components where prize > ?";
+    private static final String INSERT_NEW = "insert into pizzeria.components(name, prize) values (?, ?) returning id";
+    //private static final String GET_LAST_INSERTED = "select LAST_INSERT_ID()";
+    private static final String UPDATE_ROW = "update pizzeria.components set name = ?, prize = ? where id = ?";
+    private static final String DELETE_ROW = "delete from pizzeria.components where id = ?";
+    private static final String DELETE_PC_ROW = "delete from pizzeria.pizza_components where component_id = ?";
 
     private DataSource dataSource;
 
@@ -93,23 +94,19 @@ public class ComponentDaoJdbc
     public Component add(String name, BigDecimal prize)
         throws SQLException {
         try (Connection connection = getConnection()) {
-            int res;
             try (PreparedStatement ps = connection.prepareStatement(INSERT_NEW)) {
                 ps.setString(1, name);
                 ps.setBigDecimal(2, prize);
-                res = ps.executeUpdate();
-            }
-            if (res > 0) {
-                try (Statement statement = connection.createStatement()) {
-                    try (ResultSet resultSet = statement.executeQuery(GET_LAST_INSERTED)) {
-                        if (!resultSet.next()) {
-                            return null;
-                        }
-                        return new Component(resultSet.getLong(1), name, prize);
+                if (!ps.execute()) {
+                    return null;
+                }
+                try (ResultSet resultSet = ps.getResultSet()) {
+                    if (!resultSet.next()) {
+                        return null;
                     }
+                    return new Component(resultSet.getLong(1), name, prize);
                 }
             }
-            return null;
         }
     }
 
@@ -130,9 +127,25 @@ public class ComponentDaoJdbc
     public boolean delete(long id)
         throws SQLException {
         try (Connection connection = getConnection()) {
-            try (PreparedStatement ps = connection.prepareStatement(DELETE_ROW)) {
-                ps.setLong(1, id);
-                return ps.executeUpdate() > 0;
+            try {
+                connection.setAutoCommit(false);
+                try (PreparedStatement ps = connection.prepareStatement(DELETE_PC_ROW)) {
+                    ps.setLong(1, id);
+                    ps.executeUpdate();
+                }
+                boolean removed;
+                try (PreparedStatement ps = connection.prepareStatement(DELETE_ROW)) {
+                    ps.setLong(1, id);
+                    removed = ps.executeUpdate() > 0;
+                }
+                connection.commit();
+                return removed;
+            } catch (SQLException e) {
+                connection.rollback();
+                throw e;
+            } catch (Exception e) {
+                connection.rollback();
+                throw new RuntimeException(e.getMessage(), e);
             }
         }
     }
