@@ -8,12 +8,13 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import javax.sql.DataSource;
 
 import ua.goit.offline4.dao.PizzaDao;
 import ua.goit.offline4.entity.Component;
-import ua.goit.offline4.entity.ComponentAmount;
+import ua.goit.offline4.entity.PizzaComponents;
 import ua.goit.offline4.entity.Pizza;
 
 /**
@@ -85,7 +86,7 @@ public class PizzaDaoJbdc
     }
 
     @Override
-    public Pizza add(String name, BigDecimal prize, Collection<ComponentAmount> components)
+    public Pizza add(String name, BigDecimal prize, List<PizzaComponents> components)
         throws SQLException {
         try (Connection connection = dataSource.getConnection()) {
             connection.setAutoCommit(false);
@@ -108,7 +109,7 @@ public class PizzaDaoJbdc
                 pizza.setName(name);
                 pizza.setPrize(prize);
                 try (PreparedStatement ps = connection.prepareStatement(ADD_COMPONENTS_NEW)) {
-                    for (ComponentAmount amount : components) {
+                    for (PizzaComponents amount : components) {
                         ps.setLong(1, amount.getComponent().getId());
                         ps.setLong(2, pizza.getId());
                         ps.setBigDecimal(3, amount.getAmount());
@@ -142,25 +143,28 @@ public class PizzaDaoJbdc
     }
 
     @Override
-    public void addComponent(long id, ComponentAmount component)
+    public void addComponent(long id, PizzaComponents component)
         throws SQLException {
 
     }
 
     @Override
-    public void removeComponent(long id, ComponentAmount component)
+    public void removeComponent(long id, PizzaComponents component)
         throws SQLException {}
 
-    private Collection<ComponentAmount> getComponents(Connection connection, long pizzaId)
+    private List<PizzaComponents> getComponents(Connection connection, long pizzaId)
         throws SQLException {
         try (PreparedStatement psC = connection.prepareStatement(GET_COMPONENTS_ALL)) {
             psC.setLong(1, pizzaId);
             try (ResultSet resultSet = psC.executeQuery()) {
-                Collection<ComponentAmount> components = new ArrayList<>();
+                List<PizzaComponents> components = new ArrayList<>();
                 while (resultSet.next()) {
-                    Component component = new Component(resultSet.getLong(1), resultSet.getString(2), resultSet.getBigDecimal(3));
+                    Component component = new Component();
+                    component.setId(resultSet.getLong(1));
+                    component.setName(resultSet.getString(2));
+                    component.setPrize(resultSet.getBigDecimal(3));
                     BigDecimal amount = resultSet.getBigDecimal(4);
-                    ComponentAmount componentAmount = new ComponentAmount();
+                    PizzaComponents componentAmount = new PizzaComponents();
                     componentAmount.setComponent(component);
                     componentAmount.setAmount(amount);
                     components.add(componentAmount);

@@ -3,8 +3,9 @@ package ua.goit.offline4.dao;
 import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.List;
 
-import ua.goit.offline4.entity.ComponentAmount;
+import ua.goit.offline4.entity.PizzaComponents;
 import ua.goit.offline4.entity.Pizza;
 
 /**
@@ -21,7 +22,7 @@ public interface PizzaDao {
     Collection<Pizza> getAll()
         throws SQLException;
 
-    Pizza add(String name, BigDecimal prize, Collection<ComponentAmount> components)
+    Pizza add(String name, BigDecimal prize, List<PizzaComponents> components)
         throws SQLException;
 
     void update(Pizza pizza)
@@ -30,9 +31,9 @@ public interface PizzaDao {
     void delete(Pizza pizza)
         throws SQLException;
 
-    void addComponent(long id, ComponentAmount component)
+    void addComponent(long id, PizzaComponents component)
         throws SQLException;
 
-    void removeComponent(long id, ComponentAmount component)
+    void removeComponent(long id, PizzaComponents component)
         throws SQLException;
 }

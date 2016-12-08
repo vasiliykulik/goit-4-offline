@@ -1,6 +1,12 @@
 package ua.goit.offline4.entity;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
+
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 
 /**
  * ComponentAmount.
@@ -8,9 +14,18 @@ import java.math.BigDecimal;
  * @author Andrey Minov (andrey.minov@playtech.com)
  * @since 2016.12
  */
-public class ComponentAmount {
+@Entity
+@Table(name = "pizza_components", schema = "pizzeria")
+public class PizzaComponents
+    implements Serializable {
 
+    @Id
+    @ManyToOne
     private Component component;
+    @Id
+    @ManyToOne
+    private Pizza pizza;
+
     private BigDecimal amount;
 
     public Component getComponent() {
@@ -29,8 +44,11 @@ public class ComponentAmount {
         this.amount = amount;
     }
 
-    @Override
-    public String toString() {
-        return "ComponentAmount{" + "component=" + component + ", amount=" + amount + '}';
+    public Pizza getPizza() {
+        return pizza;
+    }
+
+    public void setPizza(Pizza pizza) {
+        this.pizza = pizza;
     }
 }

@@ -11,7 +11,7 @@ import org.apache.commons.dbcp.BasicDataSource;
 import ua.goit.offline4.dao.jdbc.ComponentDaoJdbc;
 import ua.goit.offline4.dao.jdbc.PizzaDaoJbdc;
 import ua.goit.offline4.entity.Component;
-import ua.goit.offline4.entity.ComponentAmount;
+import ua.goit.offline4.entity.PizzaComponents;
 import ua.goit.offline4.entity.Pizza;
 
 /**
@@ -44,9 +44,9 @@ public class PizzaDaoTest {
         ComponentDao cDao = new ComponentDaoJdbc(dataSource);
         List<Component> allComponents = new ArrayList<>(cDao.getAll());
         Collections.shuffle(allComponents);
-        List<ComponentAmount> amounts = new ArrayList<>();
+        List<PizzaComponents> amounts = new ArrayList<>();
         for (Component c : allComponents.subList(0, 3)) {
-            ComponentAmount componentAmount = new ComponentAmount();
+            PizzaComponents componentAmount = new PizzaComponents();
             componentAmount.setComponent(c);
             componentAmount.setAmount(BigDecimal.valueOf(0.2));
             amounts.add(componentAmount);

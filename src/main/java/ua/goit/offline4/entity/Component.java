@@ -1,6 +1,16 @@
 package ua.goit.offline4.entity;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 import java.math.BigDecimal;
+import java.util.List;
+
+
+import static javax.persistence.GenerationType.IDENTITY;
 
 /**
  * Component.
@@ -8,56 +18,49 @@ import java.math.BigDecimal;
  * @author Andrey Minov
  * @since 2016.12
  */
+@Entity
+@Table(name = "components", schema = "pizzeria")
 public class Component {
 
-    private long id;
+    @Id
+    @GeneratedValue(strategy = IDENTITY)
+    private Long id;
     private String name;
     private BigDecimal prize;
 
-    public Component(long id, String name, BigDecimal prize) {
-        this.id = id;
-        this.name = name;
-        this.prize = prize;
+    @OneToMany(mappedBy = "component", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<PizzaComponents> componentAmounts;
+
+    public Long getId() {
+        return id;
     }
 
-    public long getId() {
-        return id;
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getName() {
         return name;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public BigDecimal getPrize() {
         return prize;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-
-        Component component = (Component) o;
-
-        if (id != component.id) {
-            return false;
-        }
-        if (name != null ? !name.equals(component.name) : component.name != null) {
-            return false;
-        }
-        return prize != null ? prize.equals(component.prize) : component.prize == null;
+    public void setPrize(BigDecimal prize) {
+        this.prize = prize;
     }
 
-    @Override
-    public int hashCode() {
-        int result = (int) (id ^ (id >>> 32));
-        result = 31 * result + (name != null ? name.hashCode() : 0);
-        result = 31 * result + (prize != null ? prize.hashCode() : 0);
-        return result;
+    public List<PizzaComponents> getComponentAmounts() {
+        return componentAmounts;
+    }
+
+    public void setComponentAmounts(List<PizzaComponents> componentAmounts) {
+        this.componentAmounts = componentAmounts;
     }
 
     @Override

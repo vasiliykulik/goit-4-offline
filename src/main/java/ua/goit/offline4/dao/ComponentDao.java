@@ -14,21 +14,15 @@ import ua.goit.offline4.entity.Component;
  */
 public interface ComponentDao {
 
-    Component get(long id)
-        throws SQLException;
+    Component get(long id);
 
-    Collection<Component> getAll()
-        throws SQLException;
+    Collection<Component> getAll();
 
-    Collection<Component> gtByPrize(BigDecimal prize)
-        throws SQLException;
+    Collection<Component> gtByPrize(BigDecimal prize);
 
-    Component add(String name, BigDecimal prize)
-        throws SQLException;
+    Component add(String name, BigDecimal prize);
 
-    boolean update(Component component)
-        throws SQLException;
+    boolean update(Component component);
 
-    boolean delete(long id)
-        throws SQLException;
+    boolean delete(long id);
 }

@@ -37,7 +37,7 @@ public class ComponentDaoTest {
         System.out.println(dao.gtByPrize(BigDecimal.valueOf(50)));
         Component component = dao.add("test", BigDecimal.ONE);
         System.out.println(component);
-        component = new Component(component.getId(), "new-name", component.getPrize());
+        component.setName("new-name");
         System.out.println(dao.update(component));
         System.out.println(dao.get(component.getId()));
         System.out.println(dao.delete(component.getId()));
