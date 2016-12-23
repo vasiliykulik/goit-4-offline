@@ -24,7 +24,7 @@ public class PizzaComponents
     private Component component;
     @Id
     @ManyToOne
-    private Pizza pizza;
+    private Pizza pizza; //15. Bidirectional Many to one
 
     private BigDecimal amount;
 

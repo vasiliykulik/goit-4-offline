@@ -27,8 +27,27 @@ public class Pizza {
     private long id;
     private String name;
     private BigDecimal prize;
-    @OneToMany(mappedBy = "pizza", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+
+    // 20. (В одной пицее много компонент,
+    // по сути мы разворачиваем 1кN, если перемножаем то получаем N к N )
+    @OneToMany (mappedBy = "pizza"),
+    cascade = CascadeType.All,
+    orphanRemoval = true,
+    fetch = FetchType
+
+
+
+    @OneToMany(mappedBy = "pizza", // Bidirectional One to many
+            cascade = CascadeType.ALL, // 16. что делать с коллекцией, когда что то меняются в родительском. в агрегирующем классе
+            // Если мы добавляем в пиццу какую то компоненту  - это гарантирует что добавится
+            orphanRemoval = true, // 17. что то тоже самое
+            fetch = FetchType.EAGER)  // 18. fetch важный параметр Eager - также наполнит таблицу Components. Если Lazy -
+    // 18. то только в случае если мы вызовем get Components. Collection Mapping - на сайте Hibernste
     private List<PizzaComponents> components;
+    // 20. Если нам нужно достать дополнительное поле
+
+    /* 15. На уровне Hibernate мапится на уровне Коллекции
+    * mappedBy - говорит */
 
     public long getId() {
         return id;
@@ -54,7 +73,7 @@ public class Pizza {
         this.prize = prize;
     }
 
-    public List<PizzaComponents> getComponents() {
+/*    public List<PizzaComponents> getComponents() {
         return components;
     }
 
@@ -65,5 +84,5 @@ public class Pizza {
     @Override
     public String toString() {
         return "Pizza{" + "id=" + id + ", name='" + name + '\'' + ", prize=" + prize + ", components=" + components + '}';
-    }
+    }*/
 }
